@@ -6,7 +6,6 @@ import queues from "../jobs/test-job.js";
 // Define an API endpoint
 router.get("/bull-job", async (req, res) => {
   try {
-    console.log(queues.length);
     const users = [
       { id: 1, name: "John" },
       { id: 2, name: "Jane" },

@@ -5,13 +5,13 @@ dotenv.config();
 const MY_QUEUE = "MY-QUEUE";
 const queues = [];
 for (let i = 0; i < process.env.REDIS_NUMBER_OF_QUEUE; i++) {
-  console.log(i);
   const queue = new Bull(`${MY_QUEUE}-${i}`, {
     redis: {
       port: process.env.REDIS_PORT,
       username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD,
       host: process.env.REDIS_HOST,
+      tls: { rejectUnauthorized: true },
     },
   });
   queues.push(queue);
