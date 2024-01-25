@@ -1,19 +1,38 @@
-import Bull from 'bull'
+import Bull from "bull";
+import dotenv from "dotenv";
+dotenv.config();
 
-const myFirstQueue = new Bull('my-first-queue',{redis:{port:6379,connectionName:'my-first-queue'}});
-const mySecondQueue = new Bull('my-second-queue',{redis:{port:6379,connectionName:'my-second-queue'}});
-// const mySecondQueue=[]
+const MY_QUEUE = "MY-QUEUE";
+const queues = [];
+for (let i = 0; i < process.env.REDIS_NUMBER_OF_QUEUE; i++) {
+  console.log(i);
+  const queue = new Bull(`${MY_QUEUE}-${i}`, {
+    redis: {
+      port: process.env.REDIS_PORT,
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD,
+      host: process.env.REDIS_HOST,
+      tls: { rejectUnauthorized: false },
+    },
+  });
+  queues.push(queue);
+}
 
+for (const queue of queues) {
+  queue.process(async (job) => {
+    console.log(
+      `Async consumer execution for id ${job.id} and name ${job.queue.name}`
+    );
+  });
 
-myFirstQueue.process(async (job) => {
-  console.log('async code consumer')
-  console.log(job.id)
-});
+  queue.on("completed", (job) => {
+    console.log(
+      `Job completed id ${job.id} , name ${job.queue.name} and data ${JSON.stringify(job.data)}`
+    );
+  });
+  queue.on("error", (error) => {
+    console.log(error);
+  });
+}
 
-myFirstQueue.on('completed', () => {
-    console.log(`Job completed with result`);
-  })
-
-
-
-export default {myFirstQueue,mySecondQueue}
+export default queues;
