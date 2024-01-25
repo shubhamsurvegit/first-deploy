@@ -12,7 +12,6 @@ for (let i = 0; i < process.env.REDIS_NUMBER_OF_QUEUE; i++) {
       username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD,
       host: process.env.REDIS_HOST,
-      tls: { rejectUnauthorized: false },
     },
   });
   queues.push(queue);
